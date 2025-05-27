@@ -1,0 +1,44 @@
+### **Ansible Playbook (Installing & Configuring Nginx with HTTPS)**
+#### **playbook.yml**
+This Ansible playbook installs **Nginx**, generates a **self-signed SSL certificate**, and configures HTTPS.
+
+```yaml
+- hosts: all
+  become: true
+  tasks:
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Create SSL directory
+      file:
+        path: /etc/nginx/ssl
+        state: directory
+
+    - name: Generate a Self-Signed Certificate
+      command: >
+        openssl req -x509 -nodes -days 365 -newkey rsa:2048
+        -keyout /etc/nginx/ssl/nginx.key
+        -out /etc/nginx/ssl/nginx.crt
+        -subj "/C=US/ST=State/L=City/O=Company/OU=Org/CN=example.com"
+
+    - name: Configure Nginx for HTTPS
+      copy:
+        dest: /etc/nginx/sites-available/default
+        content: |
+          server {
+              listen 443 ssl;
+              ssl_certificate /etc/nginx/ssl/nginx.crt;
+              ssl_certificate_key /etc/nginx/ssl/nginx.key;
+              location / {
+                  root /var/www/html;
+                  index index.html index.htm;
+              }
+          }
+
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
+```

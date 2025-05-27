@@ -1,0 +1,20 @@
+### **Packer Configuration (Building an AMI with Nginx)**
+#### **packer.json**
+This Packer template runs Ansible inside an Amazon Linux machine to produce an AMI containing **Nginx with HTTPS support**.
+
+```json
+{
+  "builders": [{
+    "type": "amazon-ebs",
+    "region": "ap-southeast-1",
+    "source_ami": "ami-0037200d7bbced3e7",
+    "instance_type": "t2.micro",
+    "ssh_username": "ec2-user",
+    "ami_name": "bitnami-nginx-1.26.3-r07-linux-debian-12-x86_64-hvm-ebs-nami-f5774628-e459-457a-b058-3b513caefdee"
+  }],
+  "provisioners": [{
+    "type": "ansible",
+    "playbook_file": "playbook.yml"
+  }]
+}
+```
